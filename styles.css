@@ -1107,6 +1107,29 @@ body.segments-active #filtersBar{display:none!important}
 .logout-btn{flex:0 0 auto;align-self:center;margin-left:auto;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:3px;padding:6px 10px;font:700 9px "DM Sans";cursor:pointer}
 .logout-btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
 
+/* ── TABLE OF CONTENTS ───────────────────────────────────────── */
+.toc-page{min-height:100vh;min-height:100svh;background:#143b48;color:#fff;overflow-x:hidden}
+.toc-header{height:71px;display:flex;align-items:center;gap:46px;padding:0 24px;background:#6500a0;position:relative;z-index:2}
+.toc-brand{display:flex;align-items:center;flex:0 0 auto}
+.toc-brand img{display:block;width:112px;height:auto;filter:brightness(0) invert(1)}
+.toc-header h1{font:700 20px var(--font-heading);color:#fff;line-height:1.2}
+.toc-logout{margin-left:auto;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:4px;padding:7px 13px;font:700 11px var(--font-body);cursor:pointer}
+.toc-logout:hover{background:rgba(255,255,255,.18)}
+.toc-main{min-height:calc(100svh - 71px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(50px,10vh,92px) clamp(18px,4vw,64px) 56px;background-image:linear-gradient(180deg,rgba(9,24,43,.17),rgba(6,23,34,.08) 48%,rgba(6,23,34,.16)),url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2400&q=88");background-position:center;background-size:cover;background-repeat:no-repeat}
+.toc-grid{width:min(100%,1450px);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.toc-tile{--tile-ink:#fff;position:relative;display:flex;min-height:286px;flex-direction:column;align-items:flex-start;padding:38px 20px 17px;color:var(--tile-ink);text-decoration:none;background:rgba(39,27,91,.66);border:1px solid rgba(255,255,255,.12);transition:background .2s ease,transform .2s ease;animation:toc-arrive .55s both}
+.toc-tile:nth-child(2){animation-delay:.05s}.toc-tile:nth-child(3){animation-delay:.1s}.toc-tile:nth-child(4){animation-delay:.15s}.toc-tile:nth-child(5){animation-delay:.2s}.toc-tile:nth-child(6){animation-delay:.25s}
+.toc-tile:hover,.toc-tile:focus-visible{background:rgba(76,59,139,.82);transform:translateY(-4px);outline:2px solid rgba(255,255,255,.82);outline-offset:-2px}
+.toc-tile[aria-current="page"]{--tile-ink:#230b54;background:rgba(235,244,247,.72)}
+.toc-number{width:114px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;margin:0 0 auto;background:rgba(255,255,255,.32);font:300 58px/1 var(--font-heading);letter-spacing:0}
+.toc-title{max-width:190px;margin:22px 0 8px;font:600 27px/1.04 var(--font-heading);letter-spacing:0}
+.toc-arrow{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#6800a4;font:500 17px/1 var(--font-body);transition:transform .2s ease}
+.toc-tile:hover .toc-arrow,.toc-tile:focus-visible .toc-arrow{transform:translateX(4px)}
+@keyframes toc-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1100px){.toc-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:900px}.toc-tile{min-height:235px}.toc-number{width:92px;font-size:48px}.toc-title{font-size:24px}}
+@media(max-width:620px){.toc-header{height:64px;gap:14px;padding:0 15px}.toc-brand img{width:92px}.toc-header h1{font-size:15px}.toc-logout{padding:6px 9px;font-size:10px}.toc-main{min-height:calc(100svh - 64px);padding:28px 15px 38px}.toc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.toc-tile{min-height:190px;padding:18px 14px 13px}.toc-number{width:67px;font-size:36px}.toc-title{margin-top:14px;font-size:20px}.toc-arrow{width:23px;height:23px;font-size:15px}}
+@media(prefers-reduced-motion:reduce){.toc-tile{animation:none;transition:none}}
+
 /* ── SMART CASCADE FILTERS ───────────────────────────────────── */
 .filter-control[data-cascade-parent] .filter-label::after{content:" ↳";font-size:7px;color:var(--orange);margin-left:2px}
 .filter-control[data-cascade-hidden]{display:none !important}

@@ -57,7 +57,7 @@
     const VALID_PASSWORD = "TravelPulse2026";
 
     if (sessionStorage.getItem("travelPulseAuth") === "1") {
-      window.location.replace("index.html");
+      window.location.replace("toc.html");
     }
 
     const form = document.getElementById("loginForm");
@@ -79,7 +79,7 @@
 
       if (username === VALID_USERNAME && pass === VALID_PASSWORD) {
         sessionStorage.setItem("travelPulseAuth", "1");
-        window.location.replace("index.html");
+        window.location.replace("toc.html");
       } else {
         error.textContent = "Invalid username or password. Please try again.";
         password.focus();

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6500a0" />
+  <title>Travel Pulse | Contents</title>
+  <link rel="stylesheet" href="styles.css?v=20261019_toc1" />
+  <script>
+    if (sessionStorage.getItem("travelPulseAuth") !== "1") {
+      window.location.replace("login.html");
+    }
+  </script>
+</head>
+<body class="toc-page">
+  <header class="toc-header">
+    <a class="toc-brand" href="toc.html" aria-label="Travel Pulse contents">
+      <img src="escalent-logo.svg" alt="Escalent" />
+    </a>
+    <h1>Travel Intelligence Dashboard</h1>
+    <button class="toc-logout" id="tocLogout" type="button">Log out</button>
+  </header>
+  <main class="toc-main">
+    <nav class="toc-grid" aria-label="Dashboard sections">
+      <a class="toc-tile" href="index.html?tab=behaviour" aria-current="page">
+        <span class="toc-number" aria-hidden="true">01</span>
+        <span class="toc-title">Travel Behaviour</span>
+        <span class="toc-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="toc-tile" href="index.html?tab=overview">
+        <span class="toc-number" aria-hidden="true">02</span>
+        <span class="toc-title">Travel Sentiment</span>
+        <span class="toc-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="toc-tile" href="index.html?tab=airline">
+        <span class="toc-number" aria-hidden="true">03</span>
+        <span class="toc-title">Airline Overview</span>
+        <span class="toc-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="toc-tile" href="index.html?tab=hotel">
+        <span class="toc-number" aria-hidden="true">04</span>
+        <span class="toc-title">Hotels Overview</span>
+        <span class="toc-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="toc-tile" href="index.html?tab=segments">
+        <span class="toc-number" aria-hidden="true">05</span>
+        <span class="toc-title">Segments Analysis</span>
+        <span class="toc-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="toc-tile" href="index.html?tab=overview">
+        <span class="toc-number" aria-hidden="true">06</span>
+        <span class="toc-title">Report Analysis</span>
+        <span class="toc-arrow" aria-hidden="true">→</span>
+      </a>
+    </nav>
+  </main>
+  <script>
+    document.getElementById("tocLogout").addEventListener("click", () => {
+      sessionStorage.removeItem("travelPulseAuth");
+      window.location.replace("login.html");
+    });
+  </script>
+</body>
+</html>

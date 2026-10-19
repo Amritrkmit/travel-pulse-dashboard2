@@ -1590,6 +1590,8 @@ function init(){
   setFilterDim("Market");
   addExportButtons();
   window.addEventListener("resize",debounce(renderActive,150));
+  const requestedTab=new URLSearchParams(window.location.search).get("tab");
+  if(requestedTab) switchTab(requestedTab);
 }
 function populateSegments(dim){setFilterDim(dim);}
 function baseForSelection(key,sel){
