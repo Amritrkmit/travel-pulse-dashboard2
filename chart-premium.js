@@ -87,7 +87,7 @@ window.toggleChartFilter=function(key,label){
       if(key==="BudgetChangeMode") planBudgetReasonMode="";
     }else{
       chartFilters[key]=label;
-      if(key==="BudgetChangeMode") planBudgetReasonMode=(label==="dec"||label==="inc")?label:"same";
+      if(key==="BudgetChangeMode") planBudgetReasonMode=(label==="dec"||label==="inc"||label==="cant-say")?label:"same";
     }
     invalidateRowCache();
     updateFilterSummaries(); updateSegmentBase();
@@ -110,10 +110,11 @@ window.questionMatches=function(r,key,label){
   /* app-final.js declares questionMatches twice; the later copy dropped these cases. Restored here. */
   if(key==="TripDuration") return clean(r.Q4||r.Q4a)===clean(label);
   if(key==="BudgetChangeMode"){
-    const v=clean(r.Q10||r.spendChange).toLowerCase(), mode=clean(label).toLowerCase();
+    const v=clean(r.Q10||r.spendChange).toLowerCase().replace(/[’‘]/g, "'"), mode=clean(label).toLowerCase();
     if(mode==="dec") return v.includes("decrease");
     if(mode==="same") return v.includes("same");
     if(mode==="inc") return v.includes("increase");
+    if(mode==="cant-say") return v.includes("can't say");
     return true;
   }
   if(key==="Age Group") return label==="25–44"?["25-34","35-44"].includes(r["Age Group"]):clean(r["Age Group"])===clean(label);
@@ -313,10 +314,10 @@ function applyState(st){
 window.donut=function(sel,data,center,selected,options){
   options=options||{};
   if(sel==="#planBudgetDonut"&&DATA&&DATA.records&&DATA.records.length){
-    /* budget donut is built from the already-filtered rows; recompute ignoring its own filter so all 3 slices stay visible */
-    const src=rowsIgnoringChartFilter("BudgetChangeMode"), cnt={dec:0,same:0,inc:0};
-    src.forEach(r=>{const v=String(r.Q10||"").toLowerCase(); if(v.includes("decrease"))cnt.dec++; else if(v.includes("increase"))cnt.inc++; else if(v.includes("same"))cnt.same++;});
-    const tot=cnt.dec+cnt.same+cnt.inc||1;
+    /* Recompute without this chart's filter so every budget response stays visible. */
+    const src=rowsIgnoringChartFilter("BudgetChangeMode"), cnt={dec:0,same:0,inc:0,"cant-say":0};
+    src.forEach(r=>{const v=clean(r.Q10||r.spendChange).toLowerCase().replace(/[’‘]/g, "'"); if(v.includes("decrease"))cnt.dec++; else if(v.includes("increase"))cnt.inc++; else if(v.includes("same"))cnt.same++; else if(v.includes("can't say"))cnt["cant-say"]++;});
+    const tot=cnt.dec+cnt.same+cnt.inc+cnt["cant-say"]||1;
     data=(data||[]).map(d=>cnt[d.key]==null?d:{...d,count:cnt[d.key],value:cnt[d.key]/tot,total:tot});
   }
   return premiumPie(sel,data,{...options,center},Array.isArray(selected)?selected:[]);

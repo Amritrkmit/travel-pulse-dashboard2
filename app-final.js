@@ -1679,8 +1679,12 @@ function renderOverviewInsight(){
   d3.select("#overviewInsight").html(`For <b>${selectionLabel(activeSelections)}</b>, ${fmt(research)} are still researching, ${fmt(near)} plan to travel within 1–3 months, and ${fmt(inc)} expect their travel spend to rise — <b>${topPurpose.label}</b> leads as the main trip purpose (${fmt(topPurpose.value)}).`);
 }
 function renderBehaviourInsight(){
-  const topChannel=topN(q("infoChannels"),1)[0];
-  const topExp=topN(q("experiences"),1)[0];
+  if(!activeRows().length){
+    d3.select("#behaviourInsight").html('<span class="insight-bullet">No respondents match the selected filters.</span>');
+    return;
+  }
+  const topChannel=topN(q("infoChannels"),1)[0]||{label:"No responses available",value:0};
+  const topExp=topN(q("experiences"),1)[0]||{label:"No responses available",value:0};
   const aiTrust=byLabel("aiLikelihood","Top 2 Box");
   d3.select("#behaviourInsight").html(`
     <span class="insight-bullet"><b>${topChannel.label}</b> is the top discovery channel (${fmt(topChannel.value)})</span>
@@ -2597,18 +2601,20 @@ function renderJourneyStageCharts(stageKey) {
     horizontalBars("#planDecisionChart", decisionData, { height: Math.max(260, decisionData.length * 34 + 55), max: 0.85, maxLabelChars: 34 });
 
     // C. Budget Change Donut (Q10) & Interactive Reasons (Q11 / Q11a)
-    let decCnt = 0, sameCnt = 0, incCnt = 0;
+    let decCnt = 0, sameCnt = 0, incCnt = 0, cantSayCnt = 0;
     rows.forEach(r => {
-      const v = String(r.Q10 || '').toLowerCase();
+      const v = clean(r.Q10 || r.spendChange).toLowerCase().replace(/[’‘]/g, "'");
       if (v.includes('decrease')) decCnt++;
       else if (v.includes('increase')) incCnt++;
       else if (v.includes('same')) sameCnt++;
+      else if (v.includes("can't say")) cantSayCnt++;
     });
-    const totalQ10 = decCnt + sameCnt + incCnt || 1;
+    const totalQ10 = decCnt + sameCnt + incCnt + cantSayCnt || 1;
     const budgetDonutData = [
       { label: 'Will decrease (slightly/moderately/significantly)', value: decCnt / totalQ10, count: decCnt, key: 'dec', color: '#d9384a' },
       { label: 'Will remain the same', value: sameCnt / totalQ10, count: sameCnt, key: 'same', color: '#EEFF3B' },
-      { label: 'Will increase (slightly/moderately/significantly)', value: incCnt / totalQ10, count: incCnt, key: 'inc', color: '#3db87e' }
+      { label: 'Will increase (slightly/moderately/significantly)', value: incCnt / totalQ10, count: incCnt, key: 'inc', color: '#3db87e' },
+      { label: "Can't say", value: cantSayCnt / totalQ10, count: cantSayCnt, key: 'cant-say', color: '#8b91a0' }
     ];
 
     const budgetDonutChart = donut("#planBudgetDonut", budgetDonutData, "Budget change", [], {
@@ -2662,7 +2668,9 @@ function renderJourneyStageCharts(stageKey) {
         if (btnDec) { btnDec.style.background = "transparent"; btnDec.style.color = "#d9384a"; }
         if (btnInc) { btnInc.style.background = "transparent"; btnInc.style.color = "#3db87e"; }
         const el=document.getElementById("planBudgetReasonsChart");
-        if(el) el.innerHTML='<div class="empty-chart">No increase/decrease reason is available for “Will remain the same”.</div>';
+        if(el) el.innerHTML=mode==="cant-say"
+          ? '<div class="empty-chart">No budget-change reason is available for “Can\'t say”.</div>'
+          : '<div class="empty-chart">No increase/decrease reason is available for “Will remain the same”.</div>';
       }
     }
 
@@ -5333,6 +5341,7 @@ function questionMatches(r,key,label){
     if(mode==="dec") return value.includes("decrease");
     if(mode==="same") return value.includes("same");
     if(mode==="inc") return value.includes("increase");
+    if(mode==="cant-say") return value.replace(/[’‘]/g, "'").includes("can't say");
     return true;
   }
   if(key==="Q18" || key==="Q24") return matrixRowMatches(r,key,label);
@@ -5486,7 +5495,7 @@ function toggleChartFilter(key,label){
     if(key==="BudgetChangeMode") planBudgetReasonMode="";
   } else {
     chartFilters[key]=label;
-    if(key==="BudgetChangeMode") planBudgetReasonMode=label==="dec"||label==="inc"?label:"same";
+    if(key==="BudgetChangeMode") planBudgetReasonMode=label==="dec"||label==="inc"||label==="cant-say"?label:"same";
   }
   renderActive(); updateFilterSummaries(); updateSegmentBase();
 }
