@@ -8,13 +8,13 @@
 /* ── Region → Market mapping ─────────────────────────────────── */
 const REGION_MARKET_MAP = {
   "Europe":        ["France","Germany","Ireland","Italy","Netherlands",
-                    "Russian Federation","Spain","Switzerland","United Kingdom"],
-  "ME":            ["Bahrain","Jordan","Qatar","Saudi Arabia","Turkey",
+                    "Russian Federation","Spain","Switzerland","Turkey","United Kingdom"],
+  "ME":            ["Bahrain","Egypt","Jordan","Qatar","Saudi Arabia",
                     "United Arab Emirates"],
   "Asia":          ["China","India","Indonesia","Japan",
                     "Korea, Republic of (South Korea)","Malaysia",
                     "Singapore","Thailand"],
-  "Africa":        ["Egypt","Kenya","Nigeria","South Africa"],
+  "Africa":        ["Kenya","Nigeria","South Africa"],
   "North America": ["Canada","United States of America"],
   "Oceania":       ["Australia"],
   "LATAM":         ["Brazil"]
@@ -127,11 +127,13 @@ function enforceCascades() { /* no-op: Region and Marital removed */ }
 function regionMarketGroups() {
   const validMarkets = new Set(marketOptions());
   const source = {};
+  const regionByMarket = new Map(Object.entries(REGION_MARKET_MAP)
+    .flatMap(([region, markets]) => markets.map(market => [market, region])));
 
   if (DATA && Array.isArray(DATA.records)) {
     DATA.records.forEach(r => {
-      const region = String(r.Region || "").trim();
       const market = String(r.Market || "").trim();
+      const region = regionByMarket.get(market) || String(r.Region || "").trim();
       if (!region || !market || !validMarkets.has(market)) return;
       (source[region] = source[region] || new Set()).add(market);
     });

@@ -400,6 +400,11 @@ def main() -> None:
     records = load_records()
     if not records:
         raise SystemExit("No records found. Check data/manifest.json record chunks.")
+    country_regions = (bootstrap.get("mappings") or {}).get("countryRegion", {})
+    for row in records:
+        region = country_regions.get(clean(row.get("Market")))
+        if region:
+            row["Region"] = region
 
     precomputed_paths = {
         "filters": "data/precomputed/filters.json",

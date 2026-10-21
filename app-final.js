@@ -79,12 +79,12 @@ function mktLookup(obj,market){
 window.canonMarket=canonMarket; window.mktLookup=mktLookup;
 const MARKET_REGIONS={
   "Australia":"Oceania","Bahrain":"ME","Brazil":"LATAM","Canada":"North America",
-  "China":"Asia","Egypt":"Africa","France":"Europe","Germany":"Europe",
+  "China":"Asia","Egypt":"ME","France":"Europe","Germany":"Europe",
   "India":"Asia","Indonesia":"Asia","Ireland":"Europe","Italy":"Europe",
   "Japan":"Asia","Jordan":"ME","Kenya":"Africa","Korea, Republic of (South Korea)":"Asia",
   "Malaysia":"Asia","Netherlands":"Europe","Nigeria":"Africa","Qatar":"ME",
   "Russian Federation":"Europe","Saudi Arabia":"ME","Singapore":"Asia","South Africa":"Africa",
-  "Spain":"Europe","Switzerland":"Europe","Thailand":"Asia","Turkey":"ME",
+  "Spain":"Europe","Switzerland":"Europe","Thailand":"Asia","Turkey":"Europe",
   "United Arab Emirates":"ME","United Kingdom":"Europe","United States of America":"North America"
 };
 const DEST_NORMALIZER = {
@@ -150,7 +150,7 @@ const normalizeRecord=r=>{
   return {
     ...r,
     Market:market,
-    Region:clean(r.Region)||MARKET_REGIONS[market]||"",
+    Region:MARKET_REGIONS[market]||clean(r.Region)||"",
     Income:clean(r.Income??incomeField?.[1]),
     hotelBrand,
     Q21:clean(r.Q21||hotelBrand).replace(/<[^>]*>/g,"").trim()

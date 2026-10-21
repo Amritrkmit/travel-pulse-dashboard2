@@ -82,12 +82,12 @@ $aliases = @{
 }
 $marketRegions = @{
   'Australia'='Oceania'; 'Bahrain'='ME'; 'Brazil'='LATAM'; 'Canada'='North America'
-  'China'='Asia'; 'Egypt'='Africa'; 'France'='Europe'; 'Germany'='Europe'; 'India'='Asia'
+  'China'='Asia'; 'Egypt'='ME'; 'France'='Europe'; 'Germany'='Europe'; 'India'='Asia'
   'Indonesia'='Asia'; 'Ireland'='Europe'; 'Italy'='Europe'; 'Japan'='Asia'; 'Jordan'='ME'
   'Kenya'='Africa'; 'Korea, Republic of (South Korea)'='Asia'; 'Malaysia'='Asia'
   'Netherlands'='Europe'; 'Nigeria'='Africa'; 'Qatar'='ME'; 'Russian Federation'='Europe'
   'Saudi Arabia'='ME'; 'Singapore'='Asia'; 'South Africa'='Africa'; 'Spain'='Europe'
-  'Switzerland'='Europe'; 'Thailand'='Asia'; 'Turkey'='ME'; 'United Arab Emirates'='ME'
+  'Switzerland'='Europe'; 'Thailand'='Asia'; 'Turkey'='Europe'; 'United Arab Emirates'='ME'
   'United Kingdom'='Europe'; 'United States of America'='North America'
 }
 
@@ -106,7 +106,7 @@ $survey.records = @($survey.records | ForEach-Object {
   $brandSource = if ($null -ne $_.hotelBrand -and (Clean-Text $_.hotelBrand)) { $_.hotelBrand } else { $_.Q21 }
   $brand = Clean-Text $brandSource
   $_.Market = $market
-  $_.Region = if (Clean-Text $_.Region) { Clean-Text $_.Region } elseif ($regionByCountry.ContainsKey($market)) { $regionByCountry[$market] } else { '' }
+  $_.Region = if ($marketRegions.ContainsKey($market)) { $marketRegions[$market] } elseif (Clean-Text $_.Region) { Clean-Text $_.Region } elseif ($regionByCountry.ContainsKey($market)) { $regionByCountry[$market] } else { '' }
   $_.hotelBrand = $brand
   $_.Q21 = Clean-Text $_.Q21
   $_
