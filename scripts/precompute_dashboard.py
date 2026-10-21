@@ -257,6 +257,9 @@ def summarize_question(rows: Sequence[Mapping[str, Any]], key: str, bootstrap: M
     answer_base = 0
     for row in rows:
         values = as_list(row.get(key))
+        raw_key = {"infoChannels": "Q7", "decisionFactors": "Q9"}.get(key)
+        if raw_key:
+            values = as_list(row.get(raw_key)) or values
         if not values:
             continue
         if qtype == "multi":

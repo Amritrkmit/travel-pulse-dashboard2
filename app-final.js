@@ -2510,7 +2510,7 @@ function renderJourneyStageCharts(stageKey) {
     horizontalBars("#experienceChart", expData, { height: Math.max(270, expData.length * 34 + 55), max: Math.min(1, (d3.max(expData, d=>d.value) || 0.5) * 1.25), labelWidth: 230, maxLabelChars: 34, labelFontSize: 12 });
 
     // 4. Q7 Discovery Channels
-    horizontalBars("#infoChart", channelDisplayRows(q("infoChannels").slice(0, 7)), { height: 260, max: 0.75 });
+    horizontalBars("#infoChart", channelDisplayRows(q("infoChannels")), { height: 260, max: 0.75 });
   }
 
   if(stageKey==="Plan") {
@@ -2594,10 +2594,10 @@ function renderJourneyStageCharts(stageKey) {
     horizontalBars("#planTravelPeriodPie",travelPeriodData,{height:300,max:1,labelWidth:150,preserveOrder:true,gradient:true,valueFormat:oneDecimalShare,axisFormat:d3.format(".0%")});
 
     // A. Key Channels of Collecting Information (Q7)
-    horizontalBars("#planInfoChart", channelDisplayRows(q("infoChannels").slice(0, 7)), { height: 260, max: 0.75 });
+    horizontalBars("#planInfoChart", channelDisplayRows(q("infoChannels")), { height: 260, max: 0.75 });
 
     // B. Key Trip Considerations (Q9)
-    const decisionData=q("decisionFactors");
+    const decisionData=q("decisionFactors").filter(item=>!/^others?(?:\s*\(please\s+specify\))?$/i.test(clean(item.label)));
     horizontalBars("#planDecisionChart", decisionData, { height: Math.max(260, decisionData.length * 34 + 55), max: 0.85, maxLabelChars: 34 });
 
     // C. Budget Change Donut (Q10) & Interactive Reasons (Q11 / Q11a)
@@ -5713,9 +5713,23 @@ function q(key){
     return def.data.map(d=>({label:clean(d.label),value:segmentValue(d,key)})).filter(d=>d.label);
   }
   const rows=activeRows();
-  if(def.type==="multi") return (def.items||[])
-    .map(it=>({label:clean(it.label),value:rows.length?rows.filter(r=>Array.isArray(r[key])&&r[key].some(value=>clean(value)===clean(it.label))).length/rows.length:0}))
-    .filter(d=>d.label && Number.isFinite(d.value) && d.value > 0);
+  if(def.type==="multi") {
+    const counts=new Map((def.items||[]).map(item=>[clean(item.label),0]).filter(([label])=>label));
+    const valuesForRow=row=>{
+      const rawKey=key==="infoChannels"?"Q7":key==="decisionFactors"?"Q9":null;
+      return rawKey&&Array.isArray(row[rawKey])&&row[rawKey].length?row[rawKey]:row[key];
+    };
+    const answeredRows=rows.filter(row=>Array.isArray(valuesForRow(row))&&valuesForRow(row).length);
+    answeredRows.forEach(row=>valuesForRow(row).forEach(value=>{
+      const label=clean(value);
+      if(label)counts.set(label,(counts.get(label)||0)+1);
+    }));
+    const denominator=answeredRows.length||rows.length||1;
+    return [...counts.entries()]
+      .map(([label,count])=>({label,count,value:count/denominator}))
+      .filter(item=>item.count>0)
+      .sort((a,b)=>b.value-a.value);
+  }
   if(def.type==="nps"){
     const vals=rows.map(r=>Number(r[key])).filter(Number.isFinite), out=[];
     for(let n=0;n<=10;n++) out.push({label:String(n),value:vals.length?vals.filter(v=>v===n).length/vals.length:0});
@@ -5825,7 +5839,11 @@ function shortExperienceLabel(label){
 }
 
 function channelDisplayRows(rows){
-  return rows.map(row=>({
+  const visible=[...rows]
+    .filter(row=>!/^others?(?:\s*\(please\s+specify\))?$/i.test(clean(row.label)))
+    .sort((a,b)=>b.value-a.value)
+    .slice(0,7);
+  return visible.map(row=>({
     ...row,
     label:displayLabelText(row.label,"infoChannels"),
     filterLabel:row.label
@@ -5942,6 +5960,14 @@ function surveyToggleFilter(key,label){
 function questionMatches(r,key,label){
   if(key==="Q18" || key==="Q24"){
     return matrixRowMatches(r,key,label);
+  }
+  if(key==="infoChannels"){
+    const values=Array.isArray(r.Q7)?r.Q7:r[key];
+    return Array.isArray(values)&&values.some(value=>clean(value)===clean(label));
+  }
+  if(key==="decisionFactors"){
+    const values=Array.isArray(r.Q9)?r.Q9:r[key];
+    return Array.isArray(values)&&values.some(value=>clean(value)===clean(label));
   }
   if(key==="Q8a"){
     const def=surveyDefinition(key);
