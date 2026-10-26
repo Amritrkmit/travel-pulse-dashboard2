@@ -2162,7 +2162,12 @@ function rowsIgnoringChartFilters(keys){
 }
 
 function segmentOptions(field){
-  return [...new Set((DATA?.records||[]).map(r=>clean(r[field])).filter(Boolean))].sort();
+  const options=[...new Set((DATA?.records||[]).map(r=>clean(r[field])).filter(Boolean))];
+  if(field==="Segment_Budget"){
+    const order=new Map(["Budget Travelers","Premium Travelers","Luxury Travelers"].map((label,index)=>[label,index]));
+    return options.sort((a,b)=>(order.get(a)??Infinity)-(order.get(b)??Infinity));
+  }
+  return options.sort();
 }
 
 function countField(rows,field){

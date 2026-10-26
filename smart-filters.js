@@ -75,8 +75,8 @@ const SEGMENT_FILTER_GROUPS = [
   ] },
   { label: "Segment by Budget", options: [
     { value: "Segment_Budget|Budget Travelers", label: "Budget Travelers" },
-    { value: "Segment_Budget|Luxury Travelers", label: "Luxury Travelers" },
-    { value: "Segment_Budget|Premium Travelers", label: "Premium Travelers" }
+    { value: "Segment_Budget|Premium Travelers", label: "Premium Travelers" },
+    { value: "Segment_Budget|Luxury Travelers", label: "Luxury Travelers" }
   ] }
 ];
 const SEGMENT_FILTER_OPTIONS = SEGMENT_FILTER_GROUPS.flatMap(group => group.options);
